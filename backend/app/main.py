@@ -3,10 +3,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file (for local development)
+load_dotenv()
+
 from app.database.connection import engine, Base, SessionLocal, get_db
 from app.models.user_model import User
 from app.utils.auth_utils import get_password_hash
 from app.routes import career, chatbot, mental_health, burnout, auth, admin
+from app.services.model_loader import download_models_if_needed
+
+# Download ML models from Hugging Face Hub if not present (for cloud deployment)
+download_models_if_needed()
 
 # Create database tables
 Base.metadata.create_all(bind=engine)

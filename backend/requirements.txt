@@ -1,7 +1,15 @@
 fastapi
-uvicorn
+uvicorn[standard]
 sqlalchemy
 passlib[bcrypt]
 python-jose[cryptography]
 pydantic
 python-multipart
+python-dotenv
+scikit-learn
+xgboost
+pandas
+numpy
+joblib
+huggingface_hub
+httpx

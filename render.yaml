@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: careersphere-ai
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: OPENROUTER_API_KEY
+        sync: false   # Set this manually in Render dashboard
+      - key: HF_REPO_ID
+        sync: false   # Set this to your HuggingFace repo e.g. VatsalNegi/careersphere-models
+      - key: SECRET_KEY
+        generateValue: true
