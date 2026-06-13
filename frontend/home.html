@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerSphere AI 2.0</title>
+    <!-- Busting cache with version parameter -->
+    <link rel="stylesheet" href="global.css?v=3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .hero {
+            position: relative;
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 0 5%;
+        }
+
+        /* Abstract glowing particles */
+        .glow-bg {
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(112,0,255,0.2) 0%, transparent 60%);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            filter: blur(60px);
+            animation: pulseBg 6s infinite alternate;
+        }
+
+        @keyframes pulseBg {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+            100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 900px;
+            z-index: 1;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.6rem 1.5rem;
+            background: rgba(112,0,255,0.15);
+            border: 1px solid rgba(112,0,255,0.4);
+            border-radius: 50px;
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+            color: #d4b3ff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px rgba(112,0,255,0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 6vw, 5.5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -2px;
+            color: #f1f5f9;
+        }
+
+        .hero h1 .highlight {
+            background: linear-gradient(135deg, #00d2ff, #a200ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(162,0,255,0.4);
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: #cbd5e1;
+            margin-bottom: 3.5rem;
+            max-width: 650px;
+            margin-inline: auto;
+            line-height: 1.6;
+        }
+
+        .cta-container {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cta-btn-primary {
+            padding: 1.2rem 3rem;
+            background: linear-gradient(135deg, #7000ff, #ff007f);
+            color: #ffffff;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(112,0,255,0.5);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            border: none;
+        }
+
+        .cta-btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(255,0,127,0.5);
+        }
+
+        .cta-btn-secondary {
+            padding: 1.2rem 3rem;
+            background: rgba(15, 23, 42, 0.6);
+            color: #f1f5f9;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: 1px solid rgba(255,255,255,0.15);
+            transition: 0.3s;
+            backdrop-filter: blur(15px);
+        }
+
+        .cta-btn-secondary:hover {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(255,255,255,0.3);
+            transform: translateY(-3px);
+        }
+
+        .features {
+            padding: 6rem 5% 10rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3.5rem;
+            margin-bottom: 5rem;
+            letter-spacing: -1px;
+            color: #f8fafc;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Pure Glassmorphism Dark Cards */
+        .feature-card {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 3rem 2.5rem;
+            border-radius: 24px;
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        /* Glowing blob inside the card */
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: #7000ff;
+            filter: blur(80px);
+            top: -100px;
+            right: -100px;
+            opacity: 0.15;
+            transition: all 0.5s ease;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(30, 41, 59, 0.6);
+            border-color: rgba(112, 0, 255, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(112, 0, 255, 0.2);
+        }
+
+        .feature-card:hover::after {
+            opacity: 0.4;
+            background: #00d2ff;
+        }
+
+        .feature-icon {
+            width: 70px; height: 70px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #00d2ff;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            z-index: 1;
+            transition: 0.4s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-card:hover .feature-icon {
+            background: linear-gradient(135deg, #7000ff, #00d2ff);
+            color: #ffffff;
+            border-color: transparent;
+            box-shadow: 0 10px 25px rgba(0,210,255,0.4);
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .feature-card h3 {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            color: #f8fafc;
+            position: relative;
+            z-index: 1;
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            color: #94a3b8;
+            line-height: 1.7;
+            font-size: 1.05rem;
+            position: relative;
+            z-index: 1;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <a href="home.html" class="logo">Career<span>Sphere</span> AI <span>2.0</span></a>
+        <nav>
+            <ul>
+                <li><a href="home.html">Home</a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="register.html" class="nav-btn">Start Free</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="glow-bg"></div>
+            <div class="hero-content">
+                <div class="badge">✨ Welcome to CareerSphere AI 2.0</div>
+                <h1>Intelligence for your <br><span class="highlight">Career Journey</span></h1>
+                <p>Advanced predictive models to guide your career path, analyze your mental well-being, and proactively prevent burnout in a fast-paced world.</p>
+                <div class="cta-container">
+                    <a href="register.html" class="cta-btn-primary">Get Started Now</a>
+                    <a href="#features" class="cta-btn-secondary">Explore Features</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features">
+            <h2 class="section-title">Why <span style="color: #00d2ff;">CareerSphere AI 2.0?</span></h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-brain"></i></div>
+                    <h3>Career Readiness</h3>
+                    <p>Utilize state-of-the-art machine learning algorithms to predict career readiness based on your deep academic background and unique skills.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-heartbeat"></i></div>
+                    <h3>Mental Health Checker</h3>
+                    <p>Deep behavioral insights to monitor stress levels and provide actionable, personalized advice to maintain peak mental performance daily.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-balance-scale"></i></div>
+                    <h3>Burnout Risk Analyzer</h3>
+                    <p>Proactive monitoring of work-life balance indicators to alert you before burnout strikes, ensuring sustainable growth and well-being.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="social-links">
+            <a href="https://www.linkedin.com/in/vatsal-negi-3624a12b6/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+            <a href="https://github.com/VatsalNegi" target="_blank"><i class="fab fa-github"></i></a>
+            <a href="https://www.instagram.com/vatsal.negi/" target="_blank"><i class="fab fa-instagram"></i></a>
+        </div>
+        <p style="color: #64748b; font-size: 0.95rem;">&copy; 2026 CareerSphere AI 2.0. Designed with precision & ❤️ by Vatsal Negi.</p>
+    </footer>
+</body>
+</html>

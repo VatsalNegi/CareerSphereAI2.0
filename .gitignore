@@ -1,0 +1,44 @@
+# Environment variables (NEVER commit secrets!)
+.env
+*.env
+backend/.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.pyc
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# ML model files (large binary files - use Git LFS or exclude)
+*.pkl
+*.h5
+*.joblib
+*.model
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Temporary files
+tmp/
+*.tmp

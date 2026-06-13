@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Readiness - CareerSphere AI 2.0</title>
+    <link rel="stylesheet" href="global.css?v=3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            background: rgba(15, 23, 42, 0.4);
+            padding: 2.5rem;
+            border-radius: 24px;
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            color: #f8fafc;
+            position: relative;
+        }
+
+        .container::before {
+            content: ''; position: absolute; width: 300px; height: 300px; background: #00d2ff; filter: blur(100px);
+            top: -100px; left: -100px; opacity: 0.1; border-radius: 50%; pointer-events: none; z-index: -1;
+        }
+
+        h1 { text-align: center; margin-bottom: 2rem; font-weight: 800; color: #f8fafc; }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .form-group { margin-bottom: 1.2rem; }
+        label { display: block; margin-bottom: 0.6rem; font-weight: 500; font-size: 0.95rem; color: #cbd5e1; }
+
+        input, select {
+            width: 100%; padding: 0.9rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; color: white;
+            box-sizing: border-box; transition: 0.3s;
+        }
+        input:focus, select:focus { outline: none; border-color: #00d2ff; box-shadow: 0 0 15px rgba(0, 210, 255, 0.2); background: rgba(255,255,255,0.1); }
+        option { background: #0f172a; color: white; }
+
+        .predict-btn {
+            width: 100%; padding: 1.2rem;
+            background: linear-gradient(135deg, #7000ff, #00d2ff);
+            color: white; border: none; border-radius: 12px;
+            cursor: pointer; font-size: 1.1rem; margin-top: 1.5rem; font-weight: 600;
+            box-shadow: 0 10px 20px rgba(112,0,255,0.3); transition: 0.3s;
+        }
+        .predict-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(112,0,255,0.5); }
+
+        .result-card {
+            margin-top: 3rem; padding: 2rem; border-radius: 16px;
+            background: rgba(0, 210, 255, 0.05);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            display: none; animation: fadeIn 0.6s ease-out;
+        }
+
+        .chat-section { margin-top: 3rem; display: none; animation: fadeIn 0.8s ease-out; }
+        .chat-box {
+            height: 350px; overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 1.5rem; background: rgba(0,0,0,0.2);
+            border-radius: 16px; margin-bottom: 1.5rem; color: #e2e8f0;
+        }
+
+        .message { margin-bottom: 1.2rem; padding: 1rem; border-radius: 12px; max-width: 85%; animation: fadeIn 0.3s ease-out; line-height: 1.5; }
+        .user-message { background: linear-gradient(135deg, #7000ff, #00d2ff); color: white; margin-left: auto; border-bottom-right-radius: 2px; }
+        .ai-message { background: rgba(255,255,255,0.05); color: #cbd5e1; margin-right: auto; border-bottom-left-radius: 2px; border: 1px solid rgba(255,255,255,0.1); }
+
+        .chat-input-group {
+            display: flex; gap: 0.8rem; background: rgba(0,0,0,0.2);
+            padding: 0.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .chat-input-group input { border: none; flex-grow: 1; padding: 0.8rem; background: transparent; color: white; }
+        
+        .confidence-badge {
+            display: inline-block; padding: 0.4rem 1rem; border-radius: 20px;
+            background: rgba(0, 210, 255, 0.1); color: #00d2ff; font-weight: bold;
+            border: 1px solid rgba(0, 210, 255, 0.2);
+        }
+        
+        .logout-btn { background: rgba(255, 255, 255, 0.05) !important; color: #f8fafc !important; cursor: pointer; border: 1px solid rgba(255,255,255,0.1) !important; font-family: inherit; font-size: inherit; }
+        .logout-btn:hover { background: #e74c3c !important; border-color: transparent !important; box-shadow: 0 0 15px rgba(231, 76, 60, 0.4) !important; }
+    </style>
+</head>
+
+<body>
+    <header>
+        <a href="user_dashboard.html" class="logo">Career<span>Sphere</span> AI <span>2.0</span></a>
+        <nav>
+            <ul>
+                <li><a href="user_dashboard.html">Dashboard</a></li>
+                <li><button onclick="logout()" class="nav-btn logout-btn">Logout</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>Career Readiness</h1>
+        <form id="predictionForm">
+            <div class="grid">
+                <div class="form-group"><label>University</label><select id="University"></select></div>
+                <div class="form-group"><label>Course</label><select id="Course"></select></div>
+                <div class="form-group"><label>Department</label><select id="Department"></select></div>
+                <div class="form-group"><label>Branch</label><select id="Branch"></select></div>
+                <div class="form-group"><label>Semester</label><input type="number" id="Semester" value="6"></div>
+                <div class="form-group"><label>CGPA</label><input type="number" id="CGPA" step="0.1" value="8.5"></div>
+                <div class="form-group"><label>Interest</label><select id="Interest"></select></div>
+                <div class="form-group"><label>Mode of Study</label><select id="Mode_of_Study"></select></div>
+                <div class="form-group"><label>Institution Type</label><select id="Institution_Type"></select></div>
+                <div class="form-group"><label>Location</label><select id="Location"></select></div>
+                <div class="form-group"><label>Medium of Education</label><select id="Medium_of_Education"></select>
+                </div>
+            </div>
+            <button type="submit" id="predictBtn" class="predict-btn">Analyze My Career Path</button>
+        </form>
+
+        <div id="resultCard" class="result-card">
+            <div style="border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 1.5rem; padding-bottom: 1rem;">
+                <h3>Prediction: <span id="predictionResult" style="color: #00d2ff;"></span></h3>
+                <div class="confidence-badge">Confidence: <span id="confidenceResult"></span>%</div>
+            </div>
+            <div class="report-box" id="aiReport" style="line-height: 1.6; color: #cbd5e1;"></div>
+        </div>
+
+        <div id="chatSection" class="chat-section">
+            <h3 style="margin-bottom: 1.5rem; color: #00d2ff;">💬 Career Strategy Assistant</h3>
+            <div id="chatBox" class="chat-box"></div>
+            <div class="chat-input-group">
+                <input type="text" id="chatInput" placeholder="Ask a follow-up...">
+                <button onclick="sendChat()" id="sendBtn"
+                    style="background: linear-gradient(135deg, #7000ff, #00d2ff); color:white; border:none; padding:10px 25px; border-radius:8px; cursor:pointer; font-weight: 600;">Send</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="social-links">
+            <a href="https://www.linkedin.com/in/vatsal-negi-3624a12b6/" target="_blank"><i
+                    class="fab fa-linkedin-in"></i></a>
+            <a href="https://github.com/VatsalNegi" target="_blank"><i class="fab fa-github"></i></a>
+            <a href="https://www.instagram.com/vatsal.negi/" target="_blank"><i class="fab fa-instagram"></i></a>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 CareerSphere AI 2.0. Built with ❤️ by Vatsal Negi.
+        </div>
+    </footer>
+
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = 'login.html';
+
+        const classes = {
+            "University": [
+                "Aligarh Muslim University", "Amity University", "Amrita University", "Anna University",
+                "Ashoka University", "BIT Mesra", "BITS Pilani", "Banaras Hindu University",
+                "Bennett University", "Calcutta University", "Chandigarh University", "Christ University",
+                "DIT University", "Delhi University", "Galgotias University", "Graphic Era University",
+                "Harvard University", "IFTM University", "IISc Bangalore", "IIT BHU", "IIT Bombay",
+                "IIT Delhi", "IIT Guwahati", "IIT Hyderabad", "IIT Indore", "IIT Kanpur",
+                "IIT Kharagpur", "IIT Madras", "IIT Roorkee", "Jadavpur University", "Jamia Millia Islamia",
+                "KIIT Bhubaneswar", "LPU Phagwara", "Lucknow University", "MIT Manipal",
+                "Madras University", "Manipal Institute of Technology", "Massachusetts Institute of Technology (MIT USA)",
+                "Moradabad Institute of Technology (MIT)", "Osmania University", "PES University",
+                "Patna University", "Pune University", "Punjab University", "RV College of Engineering",
+                "Rajasthan University", "SRM University", "Sharda University", "Shiv Nadar University",
+                "Stanford University", "Symbiosis International University", "Teerthanker Mahaveer University (TMU)",
+                "Thapar University", "UPES Dehradun", "University of Cambridge", "University of Hyderabad",
+                "University of Mumbai", "University of Oxford", "VIT Vellore"
+            ],
+            "Course": [
+                "Animation & VFX", "B.Arch", "B.Com", "B.Des UI/UX", "B.Ed", "B.Pharma",
+                "B.Sc Data Science", "B.Tech Civil", "B.Tech Computer Science", "B.Tech Electrical",
+                "B.Tech Electronics", "B.Tech Mechanical", "BA English", "BA Psychology", "BBA", "BCA",
+                "Cyber Security Specialization", "Hotel Management", "LLB", "LLM", "M.Com",
+                "M.Des Interaction", "M.Sc Data Science", "M.Tech AI", "MA English", "MA Psychology",
+                "MBA HR", "MBA Finance", "MBA Marketing", "MCA", "MBBS", "Mass Communication",
+                "Nursing", "PhD Research"
+            ],
+            "Department": ["Arts", "Commerce", "Design", "Engineering", "IT", "Management", "Science", "Medical", "Law", "Education", "Research"],
+            "Branch": ["AI", "Accounting", "Civil", "Computer Science", "Data Science", "Electrical", "Finance", "Marketing", "Mechanical", "Software", "UI/UX", "Physics", "Chemistry", "Biology", "General Medicine", "Dentistry", "Corporate Law", "Criminal Law", "Teaching"],
+            "Interest": ["Job", "Research", "Teaching"],
+            "Mode_of_Study": ["Distance", "Online", "Regular"],
+            "Institution_Type": ["Deemed", "Government", "Private"],
+            "Location": ["Rural", "Semi-Urban", "Urban"],
+            "Medium_of_Education": ["English", "Hindi", "Regional"]
+        };
+
+        Object.keys(classes).forEach(id => {
+            const select = document.getElementById(id);
+            if (select) {
+                classes[id].forEach(val => {
+                    const opt = document.createElement('option');
+                    opt.value = val; opt.innerText = val; select.appendChild(opt);
+                });
+            }
+        });
+
+        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('predictBtn');
+            btn.innerText = 'Analyzing Patterns...'; btn.disabled = true;
+            const payload = {
+                University: document.getElementById('University').value,
+                Course: document.getElementById('Course').value,
+                Department: document.getElementById('Department').value,
+                Branch: document.getElementById('Branch').value,
+                Semester: parseInt(document.getElementById('Semester').value),
+                CGPA: parseFloat(document.getElementById('CGPA').value),
+                Interest: document.getElementById('Interest').value,
+                Mode_of_Study: document.getElementById('Mode_of_Study').value,
+                Institution_Type: document.getElementById('Institution_Type').value,
+                Location: document.getElementById('Location').value,
+                Medium_of_Education: document.getElementById('Medium_of_Education').value
+            };
+            try {
+                const response = await fetch('/predict/career', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    document.getElementById('resultCard').style.display = 'block';
+                    document.getElementById('chatSection').style.display = 'block';
+                    document.getElementById('predictionResult').innerText = data.prediction;
+                    document.getElementById('confidenceResult').innerText = data.confidence;
+                    document.getElementById('aiReport').innerHTML = marked.parse(data.ai_report);
+                    localStorage.setItem('last_module', 'career');
+                    window.scrollTo({ top: document.getElementById('resultCard').offsetTop - 50, behavior: 'smooth' });
+                } else { alert(`Error: ${data.detail}`); }
+            } catch (error) { alert(`Error: ${error.message}`); } finally {
+                btn.innerText = 'Analyze My Career Path'; btn.disabled = false;
+            }
+        });
+
+        async function sendChat() {
+            const input = document.getElementById('chatInput');
+            const question = input.value; if (!question) return;
+            const chatBox = document.getElementById('chatBox');
+            chatBox.innerHTML += `<div class="message user-message">${question}</div>`;
+            input.value = ''; chatBox.scrollTop = chatBox.scrollHeight;
+            const sendBtn = document.getElementById('sendBtn'); sendBtn.disabled = true;
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({
+                        user_id: localStorage.getItem('user_email'),
+                        question: question, module: 'career'
+                    })
+                });
+                const data = await response.json();
+                const aiMsgDiv = document.createElement('div');
+                aiMsgDiv.className = 'message ai-message';
+                chatBox.appendChild(aiMsgDiv);
+                aiMsgDiv.innerHTML = marked.parse(data.response);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } catch (error) { alert('Chat error'); } finally { sendBtn.disabled = false; }
+        }
+        function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+    </script>
+</body>
+
+</html>
