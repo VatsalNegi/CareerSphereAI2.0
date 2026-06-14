@@ -13,3 +13,4 @@ numpy
 joblib
 huggingface_hub
 httpx
+email-validator
