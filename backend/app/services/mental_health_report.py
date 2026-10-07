@@ -1,96 +1,85 @@
 import os
-import requests
+from app.services.openrouter_service import query_openrouter
 
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+def generate_fallback_mental_health_report(data: dict, prediction: str, confidence: float) -> str:
+    stress = data.get('Stress_Level', 'Medium')
+    mood = data.get('Mood', 'Neutral')
+    anxiety = data.get('Anxiety_Level', 'Medium')
+    sleep = data.get('Sleep_Quality', 'Average')
+    screen_time = data.get('Screen_Time_Hours', 5)
+    productivity = data.get('Productivity_Level', 'Medium')
+    routine = data.get('Routine_Consistency', 'Moderate')
+    exercise = data.get('Exercise_Frequency', 'Occasional')
+    diet = data.get('Diet_Quality', 'Average')
+    workload = data.get('Workload_Level', 'Medium')
 
+    return f"""### 🧘 Well-being Snapshot
+Your overall **Mental Health Well-being Assessment** indicates a status of **{prediction}** with a model confidence of **{confidence}%**. 
 
-def generate_mental_health_report(data, prediction, confidence):
+*Disclaimer: I am an AI assistant, not a medical professional. This analysis provides personal lifestyle recommendations and non-medical wellness insights.*
 
+Currently reporting a **{mood}** mood alongside **{stress}** stress and **{anxiety}** anxiety levels, your system is navigating a workload level rated as **{workload}**.
+
+---
+
+### 🔍 Behavioral & Lifestyle Analysis
+- **Screen Time & Cognitive Load**: Logging **{screen_time} hours/day** of screen time directly impacts eye strain, sleep architecture, and mental fatigue.
+- **Sleep Quality Impact**: Your sleep quality is rated as **{sleep}**. Restorative sleep is the foundational pillar for emotional regulation and cognitive clarity.
+- **Physical Activity & Diet**: Combining **{exercise}** exercise with a **{diet}** diet influences mood stability and natural dopamine baseline.
+- **Productivity & Routine**: Operating with **{routine}** routine consistency and **{productivity}** productivity shows active resilience under current demands.
+
+---
+
+### 🛡️ Key Resilience Factors & Risks
+- **Current Strengths**: Maintaining structured effort despite **{workload}** workload.
+- **Primary Risk Factors**: Extended screen engagement ({screen_time}h) paired with **{stress}** stress levels can exacerbate fatigue over time.
+
+---
+
+### 🌱 Personalized "Micro-Habit" Plan
+1. **Screen-Free Sunset**: Shut down all bright display screens 45 minutes prior to sleep to boost melatonin production.
+2. **20-20-20 Rule**: Every 20 minutes of screen usage, focus on an object 20 feet away for 20 seconds.
+3. **Hydration & Movement Break**: Take a 5-minute walk and drink water every 2 hours of seated work.
+4. **Daily Mind Dump**: Write down all urgent tasks before bedtime to clear mental overhead.
+
+---
+
+### 🧘 Stress Management & Grounding Techniques
+- **Box Breathing (4-4-4-4)**: Inhale for 4 seconds, hold for 4, exhale for 4, hold for 4. Repeat for 3 cycles during high stress spikes.
+- **5-4-3-2-1 Sensory Grounding**: Identify 5 things you see, 4 you can touch, 3 you hear, 2 you smell, and 1 you taste when feeling anxious.
+
+---
+
+### 🌅 Daily Harmony Routine
+- **Morning**: 10 minutes of morning sunlight exposure + light stretching before checking phone notifications.
+- **Evening**: Gentle digital detox + warm chamomile tea or calm listening to restore peaceful sleep.
+
+> *"Prioritizing your mental peace is not a luxury; it is the fundamental engine of your success and health."*
+"""
+
+def generate_mental_health_report(data: dict, prediction: str, confidence: float) -> str:
+    system_role = "You are a safe, compassionate mental health and wellness consultant."
     prompt = f"""
-ROLE:
-You are a Compassionate and Supportive Mental Health Consultant. Your goal is to provide a safe, non-judgmental, and highly personalized wellness analysis.
-
-CONTEXT:
-Analyze the following lifestyle and behavioral data to generate a "Holistic Well-being & Resilience Report". Address the user's current mental state ({prediction}) with empathy and practical guidance.
-
----------------------------------------------------------
 USER WELLNESS DATA:
----------------------------------------------------------
-- Stress Level: {data['Stress_Level']}
-- Current Mood: {data['Mood']}
-- Anxiety Level: {data['Anxiety_Level']}
-- Sleep Quality: {data['Sleep_Quality']}
-- Social Interaction: {data['Social_Interaction']}
-- Screen Time: {data['Screen_Time_Hours']} hours/day
-- Productivity: {data['Productivity_Level']}
-- Routine Consistency: {data['Routine_Consistency']}
-- Physical Activity: {data['Exercise_Frequency']}
-- Diet Quality: {data['Diet_Quality']}
-- Current Workload: {data['Workload_Level']}
+- Stress Level: {data.get('Stress_Level')}
+- Current Mood: {data.get('Mood')}
+- Anxiety Level: {data.get('Anxiety_Level')}
+- Sleep Quality: {data.get('Sleep_Quality')}
+- Social Interaction: {data.get('Social_Interaction')}
+- Screen Time: {data.get('Screen_Time_Hours')} hours/day
+- Productivity: {data.get('Productivity_Level')}
+- Routine: {data.get('Routine_Consistency')}
+- Exercise: {data.get('Exercise_Frequency')}
+- Workload: {data.get('Workload_Level')}
 
 MODEL PREDICTION:
 - Mental Health Status: {prediction}
-- Model Confidence: {confidence}%
+- Confidence: {confidence}%
 
----------------------------------------------------------
-REPORT STRUCTURE (Markdown):
----------------------------------------------------------
-1. ### Well-being Snapshot
-   - A soothing 2-3 sentence summary of their current wellness status.
-
-2. ### Behavioral & Lifestyle Analysis
-   - Analyze how factors like Screen Time ({data['Screen_Time_Hours']}h) and Sleep ({data['Sleep_Quality']}) are interacting with their {data['Stress_Level']} stress level.
-   - Contrast their {data['Exercise_Frequency']} exercise with their {data['Productivity_Level']} productivity.
-
-3. ### Key Resilience Factors & Risks
-   - Identify what is working well (e.g., strong routine) and what needs immediate attention.
-
-4. ### Personalized "Micro-Habit" Plan
-   - 3-5 small, actionable steps they can take *today*.
-
-5. ### Stress Management & Grounding Techniques
-   - Provide 2 specific techniques tailored to an anxiety level of {data['Anxiety_Level']}.
-
-6. ### Daily Harmony Routine
-   - A simple morning/evening routine suggestion based on {data['Routine_Consistency']}.
-
-7. ### Supportive Closing & Resources
-   - A final encouraging word.
-
----------------------------------------------------------
-CRITICAL GUIDELINES:
----------------------------------------------------------
-- **DISCLAIMER**: Always start or end with: "I am an AI, not a doctor. This report is for wellness purposes and does not constitute a medical diagnosis."
-- **TONE**: Empathetic, calm, safe, and empowering.
-- **SAFETY**: If signs of severe distress are present (though not explicitly in this data, keep it professional), always suggest seeking professional help.
+Generate a soothing, structured, empathetic well-being report in Markdown format with disclaimer, lifestyle analysis, micro-habits, and grounding techniques. Limit to 650 words.
 """
+    ai_content = query_openrouter(system_role, prompt, max_tokens=1500, timeout=6)
+    if ai_content:
+        return ai_content
 
-    try:
-        response = requests.post(
-            "https://openrouter.ai/api/v1/chat/completions",
-            headers={
-                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-                "Content-Type": "application/json",
-                "HTTP-Referer": "http://localhost:8000",
-                "X-Title": "CareerSphereAI"
-            },
-            json={
-                "model": "openrouter/free",
-                "messages": [
-                    {"role": "system", "content": "You are a safe mental health assistant."},
-                    {"role": "user", "content": prompt}
-                ],
-                "max_tokens": 2000
-            },
-            timeout=30
-        )
-
-        result = response.json()
-
-        if "choices" in result:
-            return result["choices"][0]["message"]["content"]
-
-        return f"Report generation failed: {result}"
-
-    except Exception as e:
-        return f"Error: {str(e)}"
+    return generate_fallback_mental_health_report(data, prediction, confidence)

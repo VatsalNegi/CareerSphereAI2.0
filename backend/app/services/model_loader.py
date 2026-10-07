@@ -7,8 +7,9 @@ import os
 import joblib
 from pathlib import Path
 
-# Base directory for models
-BASE_DIR = Path(__file__).resolve().parents[3] / "ml" / "models"
+# Base directory for models — stored inside backend/ so it works on Render
+# Path: backend/ml_models/
+BASE_DIR = Path(__file__).resolve().parents[2] / "ml_models"
 BASE_DIR.mkdir(parents=True, exist_ok=True)
 
 # Model files to download
@@ -26,20 +27,29 @@ HF_REPO_ID = os.getenv("HF_REPO_ID", "")
 
 def download_models_if_needed():
     """Download all model files from Hugging Face Hub if not present locally."""
+    local_ml_models = Path(__file__).resolve().parents[3] / "ml" / "models"
+    if local_ml_models.exists():
+        for filename in MODEL_FILES:
+            src = local_ml_models / filename
+            dst = BASE_DIR / filename
+            if src.exists() and not dst.exists():
+                import shutil
+                shutil.copy2(src, dst)
+
     missing = [f for f in MODEL_FILES if not (BASE_DIR / f).exists()]
 
     if not missing:
-        print("✅ All ML models found locally.")
+        print("[+] All ML models found locally.")
         return
 
     if not HF_REPO_ID:
         raise RuntimeError(
-            f"❌ Missing ML model files: {missing}\n"
+            f"[-] Missing ML model files: {missing}\n"
             "Set the HF_REPO_ID environment variable to your Hugging Face repo "
             "(e.g. 'YourUsername/careersphere-models') so models can be auto-downloaded."
         )
 
-    print(f"📥 Downloading {len(missing)} model file(s) from Hugging Face Hub: {HF_REPO_ID}")
+    print(f"[*] Downloading {len(missing)} model file(s) from Hugging Face Hub: {HF_REPO_ID}")
     try:
         from huggingface_hub import hf_hub_download
         for filename in missing:
@@ -50,10 +60,10 @@ def download_models_if_needed():
                 local_dir=str(BASE_DIR),
                 repo_type="model",
             )
-            print(f"   ✅ Saved to {local_path}")
-        print("✅ All models downloaded successfully!")
+            print(f"   [+] Saved to {local_path}")
+        print("[+] All models downloaded successfully!")
     except Exception as e:
-        raise RuntimeError(f"❌ Failed to download models from Hugging Face: {e}")
+        raise RuntimeError(f"[-] Failed to download models from Hugging Face: {e}")
 
 
 def get_model_path(filename: str) -> str:

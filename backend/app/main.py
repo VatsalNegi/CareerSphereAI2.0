@@ -64,6 +64,8 @@ app.include_router(chatbot.router)
 app.include_router(mental_health.router)
 app.include_router(burnout.router)
 
+from fastapi.responses import RedirectResponse
+
 @app.get("/")
 def home():
-    return {"message": "Welcome to CareerSphere AI 2.0 API"}
+    return RedirectResponse(url="/static/home.html")
